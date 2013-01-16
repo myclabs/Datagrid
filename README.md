@@ -1,11 +1,11 @@
-Datagrid
+Datagrid - PHP and JS datagrid library
 ========
-
-PHP and JS datagrid library
 
 Work under way
 
 ### Example
+
+Javascript version:
 
 ```javascript
 var example1 = new Datagrid();
@@ -31,4 +31,33 @@ example1.addRows([
 ]);
 
 example1.render(".datagrid-example");
+```
+
+PHP version:
+
+```php
+$example1 = new Datagrid();
+
+$example1->addColumns([
+	new Column("title", "Title"),
+	new Column("description", "Description"),
+]);
+
+$example1->addRows([
+	[
+		"title" => "Test",
+		"description" => "This is a long description.",
+	],
+	[
+		"title" => "Another test",
+		"description" => "This is another long description.",
+	],
+	[
+		"description" => "The description is defined before the title.",
+		"title" => "A third test",
+	],
+]);
+
+$datagridRenderer = new DatagridRenderer();
+$datagridRenderer->render($example1);
 ```
