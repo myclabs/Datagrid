@@ -3,7 +3,7 @@ Datagrid - PHP and JS datagrid library
 
 Work under way
 
-### Example
+## Basic example
 
 Javascript version:
 
@@ -60,4 +60,20 @@ $example1->addRows([
 
 $datagridRenderer = new DatagridRenderer();
 $datagridRenderer->render($example1);
+```
+
+## Example with entities
+
+```php
+$example = new EntityDatagrid();
+
+$example->addColumns([
+	new Column("title", "Title"),
+	new Column("description", "Description"),
+]);
+
+$example->setEntities($entities);
+
+$datagridRenderer = new DatagridRenderer();
+$datagridRenderer->render($example);
 ```
