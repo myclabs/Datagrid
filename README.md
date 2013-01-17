@@ -64,6 +64,8 @@ $datagridRenderer->render($example1);
 
 ## Example with entities
 
+### Static list
+
 ```php
 $articlesDatagrid = new EntityDatagrid("articlesDatagrid");
 
@@ -74,6 +76,24 @@ $articlesDatagrid->addColumns([
 ]);
 
 $articlesDatagrid->setEntities($articles);
+
+$datagridRenderer = new DatagridRenderer();
+$datagridRenderer->render($articlesDatagrid);
+```
+
+
+### Dynamic list
+
+```php
+$articlesDatagrid = new EntityDatagrid("articlesDatagrid");
+
+$articlesDatagrid->addColumns([
+	new TextColumn("title", "Title"),                 // will map to $article->getTitle()
+	new LongTextColumn("description", "Description"), // will map to $article->getDescription()
+	new TextColumn("author.name", "Author"),          // will map to $article->getAuthor()->getName()
+]);
+
+$articlesDatagrid->setQuery("select article from MyProject\Model\Article article");
 
 $datagridRenderer = new DatagridRenderer();
 $datagridRenderer->render($articlesDatagrid);
