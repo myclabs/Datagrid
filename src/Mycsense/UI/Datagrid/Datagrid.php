@@ -53,7 +53,7 @@ class Datagrid
      */
     public function getColumns()
     {
-        return $this->columns;
+        return $this->columns->toArray();
     }
 
     /**
@@ -79,7 +79,7 @@ class Datagrid
      */
     public function getRows()
     {
-        return $this->rows;
+        return $this->rows->toArray();
     }
 
     /**

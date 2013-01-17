@@ -14,38 +14,25 @@ class DatagridRenderer
      */
     public function render(Datagrid $datagrid)
     {
+        $columnsHtml = json_encode($datagrid->getColumns(), JSON_PRETTY_PRINT);
+        $rowsHtml = json_encode($datagrid->getRows(), JSON_PRETTY_PRINT);
+
         $htmlId = $datagrid->getId();
-        $html = <<<HTML
+
+        return <<<HTML
             <div id='$htmlId'></div>
             <script>
                 $(function() {
                     var datagrid = new Datagrid();
 
-                    datagrid.addColumns([
-                        new Column("title", "Title"),
-                        new Column("description", "Description")
-                    ]);
+                    datagrid.addColumns($columnsHtml);
 
-                    datagrid.addRows([
-                        {
-                            "title": "Test",
-                            "description": "This is a long description."
-                        },
-                        {
-                            "title": "Another test",
-                            "description": "This is another long description."
-                        },
-                        {
-                            "description": "The description is defined before the title.",
-                            "title": "A third test"
-                        }
-                    ]);
+                    datagrid.addRows($rowsHtml);
 
                     datagrid.render("#$htmlId");
                 });
             </script>
 HTML;
-        return $html;
     }
 
 }

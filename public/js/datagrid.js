@@ -73,11 +73,11 @@ Datagrid.prototype.render = function(selector) {
 		// Cells
 		element.find("tbody tr").each(function(index) {
 			var row = that.rows[index];
-			if (! (column.id in row)) {
-				console.error("No '" + column.id + "' found in row #" + index + " of the datagrid");
+			if (! (column.key in row)) {
+				console.error("No '" + column.key + "' found in row #" + index + " of the datagrid");
 				return;
 			}
-			var content = row[column.id];
+			var content = row[column.key];
 			var domCell = $("<td></td>")
 				.text(content);
 			$(this).append(domCell);
@@ -88,11 +88,11 @@ Datagrid.prototype.render = function(selector) {
 
 /**
  * Column
- * @param id {int} Column's id
+ * @param key {int} Column's id
  * @param label {string} Column's label
  * @constructor
  */
-function Column(id, label) {
-	this.id = id;
+function Column(key, label) {
+	this.key = key;
 	this.label = label;
 }
