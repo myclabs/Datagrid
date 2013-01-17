@@ -4,7 +4,8 @@
 	"description": "PHP and JS datagrid library",
 	"autoload": {
 		"psr-0": {
-			"Mycsense": "src/"
+			"Mycsense": "src/",
+			"UnitTests": "tests/"
 		}
 	},
 	"require": {

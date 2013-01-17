@@ -32,7 +32,7 @@ class Datagrid
      */
     public function __construct($id)
     {
-        if (empty($id)) {
+        if (empty($id) || !is_string($id)) {
             throw new \InvalidArgumentException("ID parameter must be a non-empty string");
         }
         $this->id = $id;
