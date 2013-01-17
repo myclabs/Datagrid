@@ -8,7 +8,7 @@ Work under way
 Javascript version:
 
 ```javascript
-var example1 = new Datagrid();
+var example1 = new Datagrid("datagrid-example");
 
 example1.addColumns([
 	new Column("title", "Title"),
@@ -65,15 +65,16 @@ $datagridRenderer->render($example1);
 ## Example with entities
 
 ```php
-$example = new EntityDatagrid();
+$articlesDatagrid = new EntityDatagrid("articlesDatagrid");
 
-$example->addColumns([
-	new Column("title", "Title"),
-	new Column("description", "Description"),
+$articlesDatagrid->addColumns([
+	new TextColumn("title", "Title"),                 // will map to $article->getTitle()
+	new LongTextColumn("description", "Description"), // will map to $article->getDescription()
+	new TextColumn("author.name", "Author"),          // will map to $article->getAuthor()->getName()
 ]);
 
-$example->setEntities($entities);
+$articlesDatagrid->setEntities($articles);
 
 $datagridRenderer = new DatagridRenderer();
-$datagridRenderer->render($example);
+$datagridRenderer->render($articlesDatagrid);
 ```
