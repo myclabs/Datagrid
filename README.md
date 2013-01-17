@@ -23,10 +23,6 @@ example1.addRows([
 	{
 		"title":       "Another test",
 		"description": "This is another long description."
-	},
-	{
-		"description": "The description is defined before the title.",
-		"title":       "A third test"
 	}
 ]);
 
@@ -51,10 +47,6 @@ $example1->addRows([
 	[
 		"title" => "Another test",
 		"description" => "This is another long description.",
-	],
-	[
-		"description" => "The description is defined before the title.",
-		"title" => "A third test",
 	],
 ]);
 
