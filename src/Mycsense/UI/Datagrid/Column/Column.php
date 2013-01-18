@@ -1,6 +1,6 @@
 <?php
 
-namespace Mycsense\UI\Datagrid;
+namespace Mycsense\UI\Datagrid\Column;
 
 /**
  * Datagrid column

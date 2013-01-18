@@ -2,7 +2,7 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Mycsense\UI\Datagrid\Column;
+use Mycsense\UI\Datagrid\Column\Column;
 use Mycsense\UI\Datagrid\Datagrid;
 use Mycsense\UI\Datagrid\DatagridRenderer;
 

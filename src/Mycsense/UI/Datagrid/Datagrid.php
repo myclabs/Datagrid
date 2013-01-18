@@ -3,8 +3,8 @@
 namespace Mycsense\UI\Datagrid;
 
 use Doctrine\Common\Collections\Collection;
-use ReflectionClass;
 use Doctrine\Common\Collections\ArrayCollection;
+use Mycsense\UI\Datagrid\Column\Column;
 
 /**
  * Datagrid
@@ -76,7 +76,7 @@ class Datagrid implements \JsonSerializable
     }
 
     /**
-     * @return Collection
+     * @return array
      */
     public function getRows()
     {
@@ -108,13 +108,10 @@ class Datagrid implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        $reflectionClass = new ReflectionClass($this);
-        $data = [];
-        foreach ($reflectionClass->getProperties() as $property) {
-            $propertyName = $property->getName();
-            $data[$propertyName] = $this->{'get' . $propertyName}();
-        }
-        return $data;
+        return [
+            'columns' => $this->getColumns(),
+            'rows'    => $this->getRows(),
+        ];
     }
 
 }
