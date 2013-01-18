@@ -5,15 +5,28 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Mycsense\UI\Datagrid\Column\Column;
 use Mycsense\UI\Datagrid\Datagrid;
 use Mycsense\UI\Datagrid\DatagridRenderer;
+use Mycsense\UI\Datagrid\EntityDatagrid;
 
-$example1 = new Datagrid("php-datagrid-example");
-$example1->addColumns(
+class Article {
+    public $title;
+    public $description;
+    public function __construct($title, $description)
+    {
+        $this->title = $title;
+        $this->description = $description;
+    }
+}
+
+$datagridRenderer = new DatagridRenderer();
+
+$datagrid = new Datagrid("php-datagrid-example");
+$datagrid->addColumns(
     [
         new Column("title", "Title"),
         new Column("description", "Description"),
     ]
 );
-$example1->addRows(
+$datagrid->addRows(
     [
         [
             "title"       => "Test",
@@ -30,7 +43,20 @@ $example1->addRows(
     ]
 );
 
-$datagridRenderer = new DatagridRenderer();
+$entityDatagrid = new EntityDatagrid("php-entities-datagrid-example");
+$entityDatagrid->addColumns(
+    [
+        new Column("title", "Title"),
+        new Column("description", "Description"),
+    ]
+);
+$entityDatagrid->addEntities(
+    [
+        new Article("Test", "This is a long description."),
+        new Article("Another test", "This is another long description."),
+        new Article("A third test", "The description is defined before the title."),
+    ]
+);
 ?>
 
 <html lang="en">
@@ -53,7 +79,11 @@ $datagridRenderer = new DatagridRenderer();
 
         <h2>PHP generated datagrid</h2>
 
-        <?=$datagridRenderer->render($example1)?>
+        <?=$datagridRenderer->render($datagrid)?>
+
+        <h2>Datagrid of entities</h2>
+
+        <?=$datagridRenderer->render($entityDatagrid)?>
 
     </div>
 

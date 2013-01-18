@@ -45,9 +45,11 @@ class EntityDatagrid extends Datagrid
         $propertyAccessor = PropertyAccess::getPropertyAccessor();
         $rows = [];
         foreach ($this->entities as $entity) {
+            $row = [];
             foreach ($this->columns as $column) {
-                $rows[$column->getKey()] = $propertyAccessor->getValue($entity, $column->getKey());
+                $row[$column->getKey()] = $propertyAccessor->getValue($entity, $column->getKey());
             }
+            $rows[] = $row;
         }
         return $rows;
     }
