@@ -1,5 +1,5 @@
 {
-	"name": "myc-sense/Datagrid",
+	"name": "myc-sense/datagrid",
 	"type": "library",
 	"description": "PHP and JS datagrid library",
 	"autoload": {
@@ -9,6 +9,7 @@
 		}
 	},
 	"require": {
-		"doctrine/common": "2.*"
+		"doctrine/collections": "*",
+		"symfony/property-access": "@dev"
 	}
 }
