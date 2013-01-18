@@ -4,9 +4,16 @@
  * Datagrid
  * @constructor
  */
-function Datagrid() {
+function Datagrid(object) {
 	this.columns = [];
 	this.rows = [];
+	if (typeof object !== 'undefined') {
+		for (var property in object) {
+			if (object.hasOwnProperty(property)) {
+				this[property] = object[property];
+			}
+		}
+	}
 }
 
 /**

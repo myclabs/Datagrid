@@ -14,21 +14,14 @@ class DatagridRenderer
      */
     public function render(Datagrid $datagrid)
     {
-        $columnsHtml = json_encode($datagrid->getColumns(), JSON_PRETTY_PRINT);
-        $rowsHtml = json_encode($datagrid->getRows(), JSON_PRETTY_PRINT);
-
         $htmlId = $datagrid->getId();
+        $datagridHtml = json_encode($datagrid, JSON_PRETTY_PRINT);
 
         return <<<HTML
             <div id='$htmlId'></div>
             <script>
                 $(function() {
-                    var datagrid = new Datagrid();
-
-                    datagrid.addColumns($columnsHtml);
-
-                    datagrid.addRows($rowsHtml);
-
+                    var datagrid = new Datagrid($datagridHtml);
                     datagrid.render("#$htmlId");
                 });
             </script>

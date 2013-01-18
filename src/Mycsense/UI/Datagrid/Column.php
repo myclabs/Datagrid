@@ -54,4 +54,5 @@ class Column implements \JsonSerializable
             "label" => $this->getLabel(),
         ];
     }
+
 }
