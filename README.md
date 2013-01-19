@@ -8,7 +8,7 @@ Work under way
 Javascript version:
 
 ```javascript
-var example1 = new Datagrid("datagrid-example");
+var example1 = new Datagrid();
 
 example1.addColumns([
 	new Column("title", "Title"),
@@ -54,12 +54,13 @@ $datagridRenderer = new DatagridRenderer();
 $datagridRenderer->render($example1);
 ```
 
+
 ## Example with entities
 
 ### Static list
 
 ```php
-$articlesDatagrid = new EntityDatagrid("articlesDatagrid");
+$articlesDatagrid = new EntityDatagrid("articles");
 
 $articlesDatagrid->addColumns([
 	new TextColumn("title", "Title"),                 // will map to $article->getTitle()
@@ -77,7 +78,7 @@ $datagridRenderer->render($articlesDatagrid);
 ### Dynamic list
 
 ```php
-$articlesDatagrid = new EntityDatagrid("articlesDatagrid");
+$articlesDatagrid = new EntityDatagrid("articles");
 
 $articlesDatagrid->addColumns([
 	new TextColumn("title", "Title"),                 // will map to $article->getTitle()
@@ -86,6 +87,41 @@ $articlesDatagrid->addColumns([
 ]);
 
 $articlesDatagrid->setQuery("select article from MyProject\Model\Article article");
+
+$datagridRenderer = new DatagridRenderer();
+$datagridRenderer->render($articlesDatagrid);
+```
+
+## Configuration
+
+### PHP
+
+See the examples above.
+
+### YAML
+
+```yaml
+# views/datagrids/articles.yml
+articles:
+  type: EntityDatagrid
+  columns:
+    title:
+      type: text
+      label: Article title
+      property: title
+    description:
+      type: longtext
+      label: Description
+      property: description
+    authorName:
+      type: text
+      label: Author
+      property: author.name
+```
+
+```php
+$articlesDatagrid = Datagrid::build("articles");
+$articlesDatagrid->setEntities($articles);
 
 $datagridRenderer = new DatagridRenderer();
 $datagridRenderer->render($articlesDatagrid);
