@@ -47,7 +47,7 @@ class EntityDatagrid extends Datagrid
         foreach ($this->entities as $entity) {
             $row = [];
             foreach ($this->columns as $column) {
-                $row[$column->getKey()] = $propertyAccessor->getValue($entity, $column->getKey());
+                $row[$column->getKey()] = $propertyAccessor->getValue($entity, $column->getPath());
             }
             $rows[] = $row;
         }
@@ -70,6 +70,14 @@ class EntityDatagrid extends Datagrid
         foreach ($entities as $entity) {
             $this->addEntity($entity);
         }
+    }
+
+    /**
+     * @return object[]
+     */
+    public function getEntities()
+    {
+        return $this->entities->toArray();
     }
 
 }

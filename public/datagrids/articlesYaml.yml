@@ -1,0 +1,9 @@
+articlesYaml:
+  type: EntityDatagrid
+  columns:
+    title:
+      type: text
+      label: Article title
+    description:
+      type: longtext
+      label: Description

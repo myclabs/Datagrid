@@ -9,7 +9,8 @@
 		}
 	},
 	"require": {
-		"doctrine/collections": "*",
+		"doctrine/collections": "1.*",
+		"symfony/yaml": "2.*",
 		"symfony/property-access": "@dev"
 	}
 }

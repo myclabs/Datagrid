@@ -4,9 +4,11 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Mycsense\UI\Datagrid\Column\Column;
 use Mycsense\UI\Datagrid\Datagrid;
+use Mycsense\UI\Datagrid\DatagridBuilder;
 use Mycsense\UI\Datagrid\DatagridRenderer;
 use Mycsense\UI\Datagrid\EntityDatagrid;
 
+// Fixture class
 class Article {
     public $title;
     public $description;
@@ -18,11 +20,14 @@ class Article {
 }
 
 $datagridRenderer = new DatagridRenderer();
+$datagridBuilder = new DatagridBuilder();
+$datagridBuilder->setPath(__DIR__ . "/datagrids");
 
+// Standard datagrid
 $datagrid = new Datagrid("php-datagrid-example");
 $datagrid->addColumns(
     [
-        new Column("title", "Title"),
+        new Column("title", "Article title"),
         new Column("description", "Description"),
     ]
 );
@@ -43,10 +48,11 @@ $datagrid->addRows(
     ]
 );
 
+// Entity datagrid
 $entityDatagrid = new EntityDatagrid("php-entities-datagrid-example");
 $entityDatagrid->addColumns(
     [
-        new Column("title", "Title"),
+        new Column("title", "Article title"),
         new Column("description", "Description"),
     ]
 );
@@ -57,6 +63,10 @@ $entityDatagrid->addEntities(
         new Article("A third test", "The description is defined before the title."),
     ]
 );
+
+// Entity datagrid built from configuration file
+$datagridFromYaml = $datagridBuilder->build("articlesYaml");
+$datagridFromYaml->addEntities($entityDatagrid->getEntities());
 ?>
 
 <html lang="en">
@@ -85,6 +95,10 @@ $entityDatagrid->addEntities(
 
         <?=$datagridRenderer->render($entityDatagrid)?>
 
+        <h2>Datagrid of entities configured with YAML file</h2>
+
+        <?=$datagridRenderer->render($datagridFromYaml)?>
+
     </div>
 
     <script src="js/bootstrap.min.js"></script>
@@ -94,7 +108,7 @@ $entityDatagrid->addEntities(
         var example1 = new Datagrid();
 
         example1.addColumns([
-            new Column("title", "Title"),
+            new Column("title", "Article title"),
             new Column("description", "Description")
         ]);
 
