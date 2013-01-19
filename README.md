@@ -81,11 +81,12 @@ $datagridRenderer->render($articlesDatagrid);
 $articlesDatagrid = new EntityDatagrid("articles");
 
 $articlesDatagrid->addColumns([
-	new TextColumn("title", "Title"),                 // will map to $article->getTitle()
-	new LongTextColumn("description", "Description"), // will map to $article->getDescription()
-	new TextColumn("author.name", "Author"),          // will map to $article->getAuthor()->getName()
+	new TextColumn("title", "Title"),                      // will map to $article->getTitle()
+	new LongTextColumn("description", "Description"),      // will map to $article->getDescription()
+	new TextColumn("authorName", "Author", "author.name"), // will map to $article->getAuthor()->getName()
 ]);
 
+// Doctrine query
 $articlesDatagrid->setQuery("select article from MyProject\Model\Article article");
 
 $datagridRenderer = new DatagridRenderer();
@@ -108,15 +109,13 @@ articles:
     title:
       type: text
       label: Article title
-      property: title
     description:
       type: longtext
       label: Description
-      property: description
     authorName:
       type: text
       label: Author
-      property: author.name
+      path: author.name
 ```
 
 ```php
