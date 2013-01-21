@@ -105,11 +105,11 @@ $datagridFromYaml->addEntities($entityDatagrid->getEntities());
     <script src="js/datagrid.js"></script>
 
     <script>
-        var example1 = new Datagrid();
+        var example1 = new Mycsense.Datagrid();
 
         example1.addColumns([
-            new Column("title", "Article title"),
-            new Column("description", "Description")
+            new Mycsense.Column("title", "Article title"),
+            new Mycsense.Column("description", "Description")
         ]);
 
         example1.addRows([

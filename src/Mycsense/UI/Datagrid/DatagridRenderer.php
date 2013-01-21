@@ -21,7 +21,7 @@ class DatagridRenderer
             <div id='$htmlId'></div>
             <script>
                 $(function() {
-                    var datagrid = new Datagrid($datagridHtml);
+                    var datagrid = new Mycsense.Datagrid($datagridHtml);
                     datagrid.render("#$htmlId");
                 });
             </script>

@@ -1,10 +1,13 @@
-// TODO use a Mycsense namespace
+
+if (Mycsense == null || typeof(Mycsense) != "object") {
+    var Mycsense = {};
+}
 
 /**
  * Datagrid
  * @constructor
  */
-function Datagrid(object) {
+Mycsense.Datagrid = function(object) {
 	this.columns = [];
 	this.rows = [];
 	if (typeof object !== 'undefined') {
@@ -14,21 +17,21 @@ function Datagrid(object) {
 			}
 		}
 	}
-}
+};
 
 /**
  * Add a column
- * @param column {Column}
+ * @param column {Mycsense.Column}
  */
-Datagrid.prototype.addColumn = function(column) {
+Mycsense.Datagrid.prototype.addColumn = function(column) {
 	this.columns.push(column);
 };
 
 /**
  * Add several columns
- * @param columns {Column[]}
+ * @param columns {Mycsense.Column[]}
  */
-Datagrid.prototype.addColumns = function(columns) {
+Mycsense.Datagrid.prototype.addColumns = function(columns) {
 	var that = this;
 	$.each(columns, function(index, column) {
 		that.addColumn(column);
@@ -39,7 +42,7 @@ Datagrid.prototype.addColumns = function(columns) {
  * Add a row
  * @param data {Array}
  */
-Datagrid.prototype.addRow = function(data) {
+Mycsense.Datagrid.prototype.addRow = function(data) {
 	this.rows.push(data);
 };
 
@@ -47,7 +50,7 @@ Datagrid.prototype.addRow = function(data) {
  * Add several rows
  * @param rows {Array}
  */
-Datagrid.prototype.addRows = function(rows) {
+Mycsense.Datagrid.prototype.addRows = function(rows) {
 	var that = this;
 	$.each(rows, function(index, row) {
 		that.addRow(row);
@@ -58,7 +61,7 @@ Datagrid.prototype.addRows = function(rows) {
  * Render the datagrid in a div
  * @param selector JQuery selector
  */
-Datagrid.prototype.render = function(selector) {
+Mycsense.Datagrid.prototype.render = function(selector) {
 	var that = this;
 	var element = $(selector);
 	element.append("<table class='table table-bordered'><thead><tr></tr></thead><tbody></tbody></table>");
@@ -99,7 +102,7 @@ Datagrid.prototype.render = function(selector) {
  * @param label {string} Column's label
  * @constructor
  */
-function Column(key, label) {
+Mycsense.Column = function(key, label) {
 	this.key = key;
 	this.label = label;
 }
