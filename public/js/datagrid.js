@@ -13,7 +13,11 @@ Mycsense.Datagrid = function(object) {
 	if (typeof object !== 'undefined') {
 		for (var property in object) {
 			if (object.hasOwnProperty(property)) {
-				this[property] = object[property];
+                if (property == "columns") {
+                    this.addColumns(object.columns);
+                } else {
+                    this[property] = object[property];
+                }
 			}
 		}
 	}
@@ -24,6 +28,16 @@ Mycsense.Datagrid = function(object) {
  * @param column {Mycsense.Column}
  */
 Mycsense.Datagrid.prototype.addColumn = function(column) {
+    if (typeof column.type !== 'undefined') {
+        switch (column.type) {
+            case "Column":
+                column = new Mycsense.Column(column.key, column.label);
+                break;
+            case "DateTimeColumn":
+                column = new Mycsense.DateTimeColumn(column.key, column.label);
+                break;
+        }
+    }
 	this.columns.push(column);
 };
 
@@ -88,12 +102,32 @@ Mycsense.Datagrid.prototype.render = function(selector) {
 				return;
 			}
 			var content = row[column.key];
+            var displayedContent = column.formatCell(content);
 			var domCell = $("<td></td>")
-				.text(content);
+				.text(displayedContent);
 			$(this).append(domCell);
 		});
 
 	});
+};
+
+/**
+ * Generic column
+ * @param key {int} Column's id
+ * @param label {string} Column's label
+ * @constructor
+ */
+Mycsense.Column = function(key, label) {
+    this.key = key;
+    this.label = label;
+};
+/**
+ * Format the content of a cell
+ * @param content
+ * @return string
+ */
+Mycsense.Column.prototype.formatCell = function(content) {
+    return content;
 };
 
 /**
@@ -102,7 +136,19 @@ Mycsense.Datagrid.prototype.render = function(selector) {
  * @param label {string} Column's label
  * @constructor
  */
-Mycsense.Column = function(key, label) {
-	this.key = key;
-	this.label = label;
-}
+Mycsense.DateTimeColumn = function(key, label) {
+    this.key = key;
+    this.label = label;
+};
+// Inheritance
+Mycsense.DateTimeColumn.prototype = Object.create(Mycsense.Column.prototype);
+Mycsense.DateTimeColumn.prototype.constructor = Mycsense.DateTimeColumn;
+/**
+ * Format the content of a cell
+ * @param content
+ * @return string
+ */
+Mycsense.DateTimeColumn.prototype.formatCell = function(content) {
+    var dateTime = new Date(content);
+    return dateTime.toLocaleString();
+};

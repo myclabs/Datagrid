@@ -77,7 +77,9 @@ class Column implements \JsonSerializable
      */
     public function jsonSerialize()
     {
+        $array = explode('\\', get_class($this));
         return [
+            "type"  => array_pop($array),
             "key"   => $this->getKey(),
             "label" => $this->getLabel(),
         ];

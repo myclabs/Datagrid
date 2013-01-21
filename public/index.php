@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Mycsense\UI\Datagrid\Column\Column;
+use Mycsense\UI\Datagrid\Column\DateTimeColumn;
 use Mycsense\UI\Datagrid\Datagrid;
 use Mycsense\UI\Datagrid\DatagridBuilder;
 use Mycsense\UI\Datagrid\DatagridRenderer;
@@ -12,10 +13,12 @@ use Mycsense\UI\Datagrid\EntityDatagrid;
 class Article {
     public $title;
     public $description;
-    public function __construct($title, $description)
+    public $date;
+    public function __construct($title, $description, $date)
     {
         $this->title = $title;
         $this->description = $description;
+        $this->date = $date;
     }
 }
 
@@ -54,13 +57,14 @@ $entityDatagrid->addColumns(
     [
         new Column("title", "Article title"),
         new Column("description", "Description"),
+        new DateTimeColumn("date", "Date"),
     ]
 );
 $entityDatagrid->addEntities(
     [
-        new Article("Test", "This is a long description."),
-        new Article("Another test", "This is another long description."),
-        new Article("A third test", "The description is defined before the title."),
+        new Article("Test", "This is a long description.", new DateTime()),
+        new Article("Another test", "This is another long description.", new DateTime()),
+        new Article("A third test", "The description is defined before the title.", new DateTime()),
     ]
 );
 

@@ -2,6 +2,7 @@
 
 namespace Mycsense\UI\Datagrid;
 
+use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mycsense\UI\Datagrid\Column\Column;
@@ -47,7 +48,12 @@ class EntityDatagrid extends Datagrid
         foreach ($this->entities as $entity) {
             $row = [];
             foreach ($this->columns as $column) {
-                $row[$column->getKey()] = $propertyAccessor->getValue($entity, $column->getPath());
+                $value = $propertyAccessor->getValue($entity, $column->getPath());
+                // Specific data types
+                if ($value instanceof DateTime) {
+                    $value = $value->format("Y-m-d H:i:s");
+                }
+                $row[$column->getKey()] = $value;
             }
             $rows[] = $row;
         }
