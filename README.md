@@ -64,26 +64,6 @@ $datagridRenderer->render($example1);
 
 ## Example with entities
 
-### Static list
-
-```php
-$articlesDatagrid = new EntityDatagrid("articles");
-
-$articlesDatagrid->addColumns([
-	new TextColumn("title", "Title"),                 // will map to $article->getTitle()
-	new LongTextColumn("description", "Description"), // will map to $article->getDescription()
-	new TextColumn("author.name", "Author"),          // will map to $article->getAuthor()->getName()
-]);
-
-$articlesDatagrid->setEntities($articles);
-
-$datagridRenderer = new DatagridRenderer();
-$datagridRenderer->render($articlesDatagrid);
-```
-
-
-### Dynamic list
-
 ```php
 $articlesDatagrid = new EntityDatagrid("articles");
 
@@ -93,8 +73,7 @@ $articlesDatagrid->addColumns([
 	new TextColumn("authorName", "Author", "author.name"), // will map to $article->getAuthor()->getName()
 ]);
 
-// Doctrine query
-$articlesDatagrid->setQuery("select article from MyProject\Model\Article article");
+$articlesDatagrid->setEntities($articles);
 
 $datagridRenderer = new DatagridRenderer();
 $datagridRenderer->render($articlesDatagrid);
