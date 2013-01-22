@@ -2,7 +2,6 @@
 
 namespace UnitTests\Mycsense\UI\Datagrid;
 
-use Mycsense\UI\Datagrid\Column;
 use Mycsense\UI\Datagrid\Datagrid;
 
 class DatagridTest extends \PHPUnit_Framework_TestCase
