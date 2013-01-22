@@ -4,6 +4,7 @@ namespace Mycsense\UI\Datagrid;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use InvalidArgumentException;
 use Mycsense\UI\Datagrid\Column\Column;
 
 /**
@@ -11,6 +12,11 @@ use Mycsense\UI\Datagrid\Column\Column;
  */
 class Datagrid implements \JsonSerializable
 {
+
+    const ENDPOINT_GET = "get";
+    const ENDPOINT_ADD = "add";
+    const ENDPOINT_UPDATE = "update";
+    const ENDPOINT_DELETE = "delete";
 
     /**
      * @var string
@@ -26,6 +32,11 @@ class Datagrid implements \JsonSerializable
      * @var Collection
      */
     protected $rows;
+
+    /**
+     * @var array
+     */
+    protected $endpoints = [];
 
     /**
      * @param string $id Unique HTML ID
@@ -102,6 +113,30 @@ class Datagrid implements \JsonSerializable
     }
 
     /**
+     * Define an endpoint: the URL the datagrid will call to perform an action.
+     * @param string $type ENDPOINT_GET, ENDPOINT_ADD, ENDPOINT_UPDATE or ENDPOINT_DELETE
+     * @param string $url
+     * @throws InvalidArgumentException $type is
+     */
+    public function setEndpoint($type, $url)
+    {
+        if ($type !== self::ENDPOINT_GET && $type !== self::ENDPOINT_ADD
+            && $type !== self::ENDPOINT_UPDATE && $type !== self::ENDPOINT_DELETE
+        ) {
+            throw new InvalidArgumentException("Endpoint type should be ENDPOINT_GET, ENDPOINT_ADD, ENDPOINT_UPDATE or ENDPOINT_DELETE");
+        }
+        $this->endpoints[$type] = $url;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEndpoints()
+    {
+        return $this->endpoints;
+    }
+
+    /**
      * Serializes the object to a value that can be serialized natively by json_encode().
      * @link http://docs.php.net/manual/en/jsonserializable.jsonserialize.php
      * @return mixed Returns data which can be serialized by json_encode(), which is a value of any type other than a resource.
@@ -109,8 +144,9 @@ class Datagrid implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'columns' => $this->getColumns(),
-            'rows'    => $this->getRows(),
+            'columns'   => $this->getColumns(),
+            'rows'      => $this->getRows(),
+            'endpoints' => $this->getEndpoints(),
         ];
     }
 

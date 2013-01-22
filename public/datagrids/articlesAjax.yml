@@ -1,0 +1,19 @@
+articlesAjax:
+  type: EntityDatagrid
+
+  columns:
+    title:
+      type: text
+      label: Article title
+    description:
+      type: longtext
+      label: Description
+    date:
+      type: dateTime
+      label: Date
+
+  endpoints:
+    get: datasource.php
+    add: datasource.php?action=add
+    update: datasource.php?action=update
+    delete: datasource.php?action=delete

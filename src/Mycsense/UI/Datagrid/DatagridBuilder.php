@@ -2,10 +2,11 @@
 
 namespace Mycsense\UI\Datagrid;
 
-use Symfony\Component\Yaml\Yaml;
-use Mycsense\UI\Datagrid\Column\Column;
 use Exception;
+use Mycsense\UI\Datagrid\Column\DateTimeColumn;
 use InvalidArgumentException;
+use Mycsense\UI\Datagrid\Column\Column;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Datagrid builder from configuration files
@@ -18,6 +19,7 @@ class DatagridBuilder
 
     const COLUMN_TYPE_TEXT = "text";
     const COLUMN_TYPE_LONGTEXT = "longtext";
+    const COLUMN_TYPE_DATETIME = "dateTime";
 
     /**
      * Path to the configuration files
@@ -40,20 +42,9 @@ class DatagridBuilder
      */
     public function build($id)
     {
-        $path = self::getPath();
-        if (empty($path)) {
-            throw new \InvalidArgumentException("Base path for datagrid configuration not defined, use DatagridBuilder::setPath()");
-        }
-        if (!file_exists($path)) {
-            throw new \InvalidArgumentException("Base path not found for datagrid configuration: '$path'");
-        }
-        $fileExtension = self::getFileExtension();
-        $file = $path . "/" . $id . $fileExtension;
-        if (!file_exists($file)) {
-            throw new \InvalidArgumentException("Configuration file not found for datagrid '$id': '$file'");
-        }
-        $array = Yaml::parse($file);
-        $array = $array[$id];
+        $file = $this->getFile($id);
+        $array = $this->parseFile($id, $file);
+
         // Type
         $type = $array["type"];
         switch ($type) {
@@ -66,6 +57,7 @@ class DatagridBuilder
             default:
                 throw new Exception("Unknown datagrid type '$type' in '$file'");
         }
+
         // Columns
         foreach ($array["columns"] as $key => $columnData) {
             $label = $columnData["label"];
@@ -79,11 +71,22 @@ class DatagridBuilder
                 case self::COLUMN_TYPE_LONGTEXT:
                     $column = new Column($key, $label, $path);
                     break;
+                case self::COLUMN_TYPE_DATETIME:
+                    $column = new DateTimeColumn($key, $label, $path);
+                    break;
                 default:
-                    throw new Exception("Unknown column type '$type' for $key in '$file'");
+                    throw new Exception("Unknown column type '{$columnData["type"]}' for $key in '$file'");
             }
             $datagrid->addColumn($column);
         }
+
+        // Endpoints
+        if (isset($array["endpoints"])) {
+            foreach ($array["endpoints"] as $type => $url) {
+                $datagrid->setEndpoint($type, $url);
+            }
+        }
+
         return $datagrid;
     }
 
@@ -117,6 +120,39 @@ class DatagridBuilder
     public static function setFileExtension($fileExtension)
     {
         self::$fileExtension = $fileExtension;
+    }
+
+    /**
+     * @param string $datagridId Datagrid ID
+     * @throws \InvalidArgumentException
+     * @return string File name
+     */
+    private function getFile($datagridId)
+    {
+        $path = self::getPath();
+        if (empty($path)) {
+            throw new \InvalidArgumentException("Base path for datagrid configuration not defined, use DatagridBuilder::setPath()");
+        }
+        if (!file_exists($path)) {
+            throw new \InvalidArgumentException("Base path not found for datagrid configuration: '$path'");
+        }
+        $fileExtension = self::getFileExtension();
+        return $path . "/" . $datagridId . $fileExtension;
+    }
+
+    /**
+     * @param string $id Datagrid ID
+     * @param string $file
+     * @throws \InvalidArgumentException
+     * @return array Data
+     */
+    private function parseFile($id, $file)
+    {
+        if (!file_exists($file)) {
+            throw new \InvalidArgumentException("Configuration file not found for datagrid '$id': '$file'");
+        }
+        $array = Yaml::parse($file);
+        return $array[$id];
     }
 
 }

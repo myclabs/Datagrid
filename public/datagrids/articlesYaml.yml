@@ -1,5 +1,6 @@
 articlesYaml:
   type: EntityDatagrid
+
   columns:
     title:
       type: text

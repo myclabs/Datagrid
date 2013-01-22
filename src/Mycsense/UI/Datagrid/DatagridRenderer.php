@@ -14,18 +14,27 @@ class DatagridRenderer
      */
     public function render(Datagrid $datagrid)
     {
-        $htmlId = $datagrid->getId();
+        $id = $datagrid->getId();
         $datagridHtml = json_encode($datagrid, JSON_PRETTY_PRINT);
 
         return <<<HTML
-            <div id='$htmlId'></div>
+            <div id="$id"></div>
             <script>
                 $(function() {
-                    var datagrid = new Mycsense.Datagrid($datagridHtml);
-                    datagrid.render("#$htmlId");
+                    var datagrid = new Mycsense.Datagrid("$id", $datagridHtml);
+                    datagrid.render();
                 });
             </script>
 HTML;
+    }
+
+    /**
+     * @param Datagrid $datagrid
+     * @return string Json
+     */
+    public function returnRows(Datagrid $datagrid)
+    {
+        return json_encode($datagrid->getRows(), JSON_PRETTY_PRINT);
     }
 
 }

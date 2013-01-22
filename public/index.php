@@ -10,7 +10,8 @@ use Mycsense\UI\Datagrid\DatagridRenderer;
 use Mycsense\UI\Datagrid\EntityDatagrid;
 
 // Fixture class
-class Article {
+class Article
+{
     public $title;
     public $description;
     public $date;
@@ -27,7 +28,7 @@ $datagridBuilder = new DatagridBuilder();
 $datagridBuilder->setPath(__DIR__ . "/datagrids");
 
 // Standard datagrid
-$datagrid = new Datagrid("php-datagrid-example");
+$datagrid = new Datagrid("phpDatagridExample");
 $datagrid->addColumns(
     [
         new Column("title", "Article title"),
@@ -52,7 +53,7 @@ $datagrid->addRows(
 );
 
 // Entity datagrid
-$entityDatagrid = new EntityDatagrid("php-entities-datagrid-example");
+$entityDatagrid = new EntityDatagrid("phpEntitiesDatagridExample");
 $entityDatagrid->addColumns(
     [
         new Column("title", "Article title"),
@@ -71,6 +72,9 @@ $entityDatagrid->addEntities(
 // Entity datagrid built from configuration file
 $datagridFromYaml = $datagridBuilder->build("articlesYaml");
 $datagridFromYaml->addEntities($entityDatagrid->getEntities());
+
+// AJAX entity datagrid built from configuration file
+$ajaxDatagrid = $datagridBuilder->build("articlesAjax");
 ?>
 
 <html lang="en">
@@ -89,7 +93,7 @@ $datagridFromYaml->addEntities($entityDatagrid->getEntities());
 
         <h2>Javascript generated datagrid</h2>
 
-        <div class="js-datagrid-example"></div>
+        <div id="jsDatagridExample"></div>
 
         <h2>PHP generated datagrid</h2>
 
@@ -103,13 +107,17 @@ $datagridFromYaml->addEntities($entityDatagrid->getEntities());
 
         <?=$datagridRenderer->render($datagridFromYaml)?>
 
+        <h2>AJAX datagrid</h2>
+
+        <?=$datagridRenderer->render($ajaxDatagrid)?>
+
     </div>
 
     <script src="js/bootstrap.min.js"></script>
     <script src="js/datagrid.js"></script>
 
     <script>
-        var example1 = new Mycsense.Datagrid();
+        var example1 = new Mycsense.Datagrid("jsDatagridExample");
 
         example1.addColumns([
             new Mycsense.Column("title", "Article title"),
@@ -131,7 +139,7 @@ $datagridFromYaml->addEntities($entityDatagrid->getEntities());
             }
         ]);
 
-        example1.render(".js-datagrid-example");
+        example1.render();
     </script>
 
 </body>

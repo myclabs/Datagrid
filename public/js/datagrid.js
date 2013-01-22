@@ -5,11 +5,16 @@ if (Mycsense == null || typeof(Mycsense) != "object") {
 
 /**
  * Datagrid
+ * @param id {string} Identifier of the HTML block
+ * @param object {object} Data to initialize the datagrid
  * @constructor
  */
-Mycsense.Datagrid = function(object) {
-	this.columns = [];
-	this.rows = [];
+Mycsense.Datagrid = function(id, object) {
+    this.id = id;
+    this.domElement = $("#" + id);
+    this.columns = [];
+    this.rows = [];
+    this.endpoints = [];
 	if (typeof object !== 'undefined') {
 		for (var property in object) {
 			if (object.hasOwnProperty(property)) {
@@ -22,6 +27,10 @@ Mycsense.Datagrid = function(object) {
 		}
 	}
 };
+Mycsense.Datagrid.prototype.ENDPOINT_GET = "get";
+Mycsense.Datagrid.prototype.ENDPOINT_ADD = "add";
+Mycsense.Datagrid.prototype.ENDPOINT_UPDATE = "update";
+Mycsense.Datagrid.prototype.ENDPOINT_DELETE = "delete";
 
 /**
  * Add a column
@@ -53,6 +62,13 @@ Mycsense.Datagrid.prototype.addColumns = function(columns) {
 };
 
 /**
+ * Remove all the rows of the datagrid
+ */
+Mycsense.Datagrid.prototype.clearRows = function() {
+    this.rows = [];
+};
+
+/**
  * Add a row
  * @param data {Array}
  */
@@ -72,43 +88,78 @@ Mycsense.Datagrid.prototype.addRows = function(rows) {
 };
 
 /**
- * Render the datagrid in a div
- * @param selector JQuery selector
+ * Render the datagrid
  */
-Mycsense.Datagrid.prototype.render = function(selector) {
+Mycsense.Datagrid.prototype.render = function() {
 	var that = this;
-	var element = $(selector);
-	element.append("<table class='table table-bordered'><thead><tr></tr></thead><tbody></tbody></table>");
+    that.domElement.empty();
+    that.domElement.append("<table class='table table-bordered table-striped'><thead><tr></tr></thead><tbody></tbody></table>");
 
-	// Add all the rows
-	$.each(this.rows, function(index, row) {
-		var domRow = $("<tr></tr>")
-			.data("index", index);
-		element.find("tbody").append(domRow);
-	});
-
+    // Column headers
 	$.each(this.columns, function(index, column) {
-
-		// Column header
 		var domHeaderRow = $("<th></th>")
 			.text(column.label);
-		element.find("thead tr").append(domHeaderRow);
-
-		// Cells
-		element.find("tbody tr").each(function(index) {
-			var row = that.rows[index];
-			if (! (column.key in row)) {
-				console.error("No '" + column.key + "' found in row #" + index + " of the datagrid");
-				return;
-			}
-			var content = row[column.key];
-            var displayedContent = column.formatCell(content);
-			var domCell = $("<td></td>")
-				.text(displayedContent);
-			$(this).append(domCell);
-		});
-
+        that.domElement.find("thead tr").append(domHeaderRow);
 	});
+
+    // If async datagrid, load the cells
+    if (that.ENDPOINT_GET in that.endpoints) {
+        that.asyncRefreshRows();
+    } else {
+        that.displayRows();
+    }
+};
+
+/**
+ * Refresh the rows
+ */
+Mycsense.Datagrid.prototype.asyncRefreshRows = function() {
+    var that = this;
+    $.ajax({
+        url: that.endpoints[that.ENDPOINT_GET],
+        data: {
+            id: that.id
+        },
+        success: function(data) {
+            console.log(data);
+            that.clearRows();
+            that.addRows(data);
+            that.displayRows();
+        },
+        dataType: "json"
+    });
+};
+
+/**
+ * Display the rows
+ */
+Mycsense.Datagrid.prototype.displayRows = function() {
+    var that = this;
+    var tableBody = that.domElement.find("tbody");
+    // Remove existing rows
+    tableBody.empty();
+    // Add all the rows (not the cells)
+    $.each(this.rows, function(index, row) {
+        var domRow = $("<tr></tr>")
+            .data("index", index);
+        tableBody.append(domRow);
+    });
+    // For each column
+    $.each(this.columns, function(index, column) {
+        // Cells
+        tableBody.find("tr").each(function(index) {
+            var row = that.rows[index];
+            if (! (column.key in row)) {
+                console.error("No '" + column.key + "' found in row #" + index + " of the datagrid");
+                return;
+            }
+            var content = row[column.key];
+            var displayedContent = column.formatCell(content);
+            var domCell = $("<td></td>")
+                .text(displayedContent);
+            $(this).append(domCell);
+        });
+    });
 };
 
 /**
