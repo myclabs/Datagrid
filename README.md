@@ -3,6 +3,13 @@ Datagrid - PHP and JS datagrid library
 
 Work under way
 
+## Features
+
+- JS datagrid
+- Datagrid generation with PHP
+- PHP entities/objects datagrid (e.g. Doctrine entities)
+- AJAX: async content loading
+
 ## Basic example
 
 Javascript version:
