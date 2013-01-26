@@ -13,7 +13,7 @@ articlesAjax:
       label: Date
 
   endpoints:
-    get: datasource.php
-    add: datasource.php?action=add
-    update: datasource.php?action=update
-    delete: datasource.php?action=delete
+    get: ajax-datasource.php
+    add: ajax-datasource.php?action=add
+    update: ajax-datasource.php?action=update
+    delete: ajax-datasource.php?action=delete

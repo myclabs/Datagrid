@@ -39,7 +39,7 @@ class EntityDatagrid extends Datagrid
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getRows()
     {
@@ -49,7 +49,7 @@ class EntityDatagrid extends Datagrid
             $row = [];
             foreach ($this->columns as $column) {
                 $value = $propertyAccessor->getValue($entity, $column->getPath());
-                // Specific data types
+                // Specific data types that don't have __toString()
                 if ($value instanceof DateTime) {
                     $value = $value->format("Y-m-d H:i:s");
                 }
