@@ -111,3 +111,18 @@ $articlesDatagrid->setEntities($articles);
 $datagridRenderer = new DatagridRenderer();
 $datagridRenderer->render($articlesDatagrid);
 ```
+
+## Dependencies
+
+Javascript:
+
+- jQuery
+- Bootstrap (soft dependency, only used for layout and CSS)
+
+PHP:
+
+ - Doctrine Collections: 1.*
+ - Symfony YAML: 2.*
+ - Symfony PropertyAccess
+
+(dependencies are managed through Composer)
