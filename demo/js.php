@@ -17,7 +17,7 @@ require 'template/header.php';
 
         datagrid.addColumns([
             new Mycsense.Column("title", "Article title"),
-            new Mycsense.Column("description", "Description")
+            new Mycsense.Column("description", "Description", true)
         ]);
 
         datagrid.addRows([
