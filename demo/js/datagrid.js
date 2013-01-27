@@ -59,6 +59,7 @@ Mycsense.Datagrid.prototype.addColumns = function(columns) {
     var that = this;
     $.each(columns, function(index, column) {
         that.addColumn(column);
+        column.setDatagrid(that);
     });
 };
 
@@ -86,6 +87,21 @@ Mycsense.Datagrid.prototype.addRows = function(rows) {
     $.each(rows, function(index, row) {
         that.addRow(row);
     });
+};
+
+/**
+ * Define the content of a cell
+ * @param column {Mycsense.Column}
+ * @param index {int}
+ * @param rawContent
+ */
+Mycsense.Datagrid.prototype.setCellContent = function(column, index, rawContent) {
+    this.domElement.find("tbody tr").eq(index).find("td")
+        .filter(function() {
+            return $(this).data("column-key") && $(this).data("column-key") == column.key;
+        })
+        .find(".content")
+        .text(column.getCellContent(rawContent))
 };
 
 /**
@@ -145,27 +161,17 @@ Mycsense.Datagrid.prototype.displayRows = function() {
         tableBody.append(domRow);
     });
     // For each column
-    $.each(this.columns, function(index, column) {
+    $.each(this.columns, function(columnIndex, column) {
         // Cells
-        tableBody.find("tr").each(function(index) {
-            var row = that.rows[index];
+        tableBody.find("tr").each(function(rowIndex) {
+            var row = that.rows[rowIndex];
             if (!(column.key in row)) {
-                console.error("No '" + column.key + "' found in row #" + index + " of the datagrid");
+                console.error("No '" + column.key + "' found in row #" + rowIndex + " of the datagrid");
                 return;
             }
-            var domCell = column.renderCell(row[column.key]);
+            var domCell = column.renderCell(rowIndex, row[column.key]);
             $(this).append(domCell);
         });
-        // Edit
-        if (column.editable) {
-            tableBody.find("td")
-                .filter(function() {
-                    return $(this).data("column-key") && $(this).data("column-key") == column.key;
-                })
-                .on("dblclick", function() {
-                    column.editCell($(this));
-                });
-        }
     });
 };
 
@@ -178,6 +184,7 @@ Mycsense.Datagrid.prototype.displayRows = function() {
  * @constructor
  */
 Mycsense.Column = function(key, label, editable) {
+    this.datagrid = undefined;
     this.key = key;
     this.label = label;
     if (typeof editable == 'undefined') {
@@ -189,15 +196,27 @@ Mycsense.Column = function(key, label, editable) {
 };
 
 /**
+ * Defines the datagrid owning the column
+ * @param datagrid {Mycsense.Datagrid}
+ * @private
+ */
+Mycsense.Column.prototype.setDatagrid = function(datagrid) {
+    this.datagrid = datagrid;
+};
+
+/**
  * Format the content of a cell
+ * @param index {int}
  * @param content {string}
  * @return object
  */
-Mycsense.Column.prototype.renderCell = function(content) {
+Mycsense.Column.prototype.renderCell = function(index, content) {
     var that = this;
-    var domCell = $("<td></td>")
-        .text(that.getCellContent(content))
-        .data("column-key", that.key);
+    var domCell = $('<td><span class="content"></span></td>')
+        .data("column-key", that.key)
+        .data("index", index);
+    domCell.find(".content")
+        .text(that.getCellContent(content));
     if (that.editable) {
         var editIcon = $('<button type="button" class="btn btn-mini pull-right"><i class="icon-pencil"></i></button>')
             .click(function() {
@@ -210,17 +229,29 @@ Mycsense.Column.prototype.renderCell = function(content) {
 
 /**
  * Switch a cell to edit mode
+ * @param cell DOM Element
  */
 Mycsense.Column.prototype.editCell = function(cell) {
     var that = this;
-    that.editContainer.html('<form class="form-inline"> \
+    var cellIndex = cell.parent().index();
+    var form = $('<form class="form-inline"> \
                 <input type="text" value="' + cell.text() + '"> \
                 <button type="submit" class="btn btn-primary">Save</button> \
                 <button type="button" class="btn cancel">Cancel</button> \
             </form>')
+        .submit(function(e) {
+            e.preventDefault();
+            var data = $(this).find("input").val();
+            that.datagrid.setCellContent(that, cellIndex, data);
+            that.editContainer.detach();
+            that.editContainer.empty();
+        });
+    that.editContainer.empty()
+        .append(form)
         .appendTo(cell)
         .find(".cancel").click(function() {
             that.editContainer.detach();
+            that.editContainer.empty();
         });
 };
 
@@ -228,8 +259,8 @@ Mycsense.Column.prototype.editCell = function(cell) {
  * Returns the content of a cell
  * @private
  */
-Mycsense.Column.prototype.getCellContent = function(content) {
-    return content;
+Mycsense.Column.prototype.getCellContent = function(rawContent) {
+    return rawContent;
 };
 
 
@@ -251,7 +282,7 @@ Mycsense.DateTimeColumn.prototype.constructor = Mycsense.DateTimeColumn;
  * Returns the content of a cell
  * @private
  */
-Mycsense.DateTimeColumn.prototype.getCellContent = function(content) {
-    var dateTime = new Date(content);
+Mycsense.DateTimeColumn.prototype.getCellContent = function(rawContent) {
+    var dateTime = new Date(rawContent);
     return dateTime.toLocaleString();
 };
