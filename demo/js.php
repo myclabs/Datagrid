@@ -19,7 +19,8 @@ require 'template/header.php';
 
         datagrid.addColumns([
             new Mycsense.Column("title", "Article title"),
-            new Mycsense.Column("description", "Description", true)
+            new Mycsense.Column("description", "Description", true),
+            new Mycsense.DeleteColumn()
         ]);
 
         datagrid.addRows([
@@ -39,6 +40,10 @@ require 'template/header.php';
 
         datagrid.onCellChanged(function(event, value) {
             $(".message").text("Value updated to '" + value + "'").show();
+        });
+
+        datagrid.onRowDeleted(function(event, rowIndex) {
+            $(".message").text("Row " + rowIndex + " deleted").show();
         });
 
         datagrid.render();

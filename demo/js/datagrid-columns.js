@@ -18,6 +18,7 @@ Mycsense.Column = function(key, label, editable) {
     this.datagrid = undefined;
     this.key = key;
     this.label = label;
+    this.cssClass = 'column-text';
     if (typeof editable == 'undefined') {
         this.editable = false;
     } else {
@@ -44,10 +45,11 @@ Mycsense.Column.prototype.setDatagrid = function(datagrid) {
 Mycsense.Column.prototype.renderCell = function(index, content) {
     var that = this;
     var domCell = $('<td><span class="content"></span></td>')
+        .attr("class", this.cssClass)
         .data("column-key", that.key)
         .data("index", index);
     domCell.find(".content")
-        .text(that.getCellContent(content));
+        .append(that.getCellContent(content));
     if (that.editable) {
         var editIcon = $('<button type="button" class="btn btn-mini pull-right"><i class="icon-pencil"></i></button>')
             .click(function() {
@@ -95,12 +97,40 @@ Mycsense.Column.prototype.editCell = function(cell) {
  * @private
  */
 Mycsense.Column.prototype.getCellContent = function(rawContent) {
-    return rawContent;
+    return $("<span>" + rawContent + "</span>");
 };
 
 
 /**
- * Column
+ * Delete column
+ * @param label {string} Column's label
+ * @constructor
+ */
+Mycsense.DeleteColumn = function(label) {
+    Mycsense.Column.call(this, "delete", label, false);
+    this.cssClass = 'column-delete';
+};
+// Inheritance
+Mycsense.DeleteColumn.prototype = Object.create(Mycsense.Column.prototype);
+Mycsense.DeleteColumn.prototype.constructor = Mycsense.DeleteColumn;
+
+/**
+ * Returns the content of a cell
+ * @private
+ */
+Mycsense.DeleteColumn.prototype.getCellContent = function(rawContent) {
+    var that = this;
+    var content = $("<button type='button' class='btn btn-mini'><i class='icon-remove'></i></button>");
+    content.click(function() {
+        var rowIndex = $(this).parents("tr").data('index');
+        that.datagrid.deleteRow(rowIndex);
+    });
+    return content;
+};
+
+
+/**
+ * DateTime column
  * @param key {int} Column's id
  * @param label {string} Column's label
  * @param editable {boolean} Set if the column's cells are editable
@@ -108,6 +138,7 @@ Mycsense.Column.prototype.getCellContent = function(rawContent) {
  */
 Mycsense.DateTimeColumn = function(key, label, editable) {
     Mycsense.Column.call(this, key, label, editable);
+    this.cssClass = 'column-datetime';
 };
 // Inheritance
 Mycsense.DateTimeColumn.prototype = Object.create(Mycsense.Column.prototype);
@@ -119,5 +150,5 @@ Mycsense.DateTimeColumn.prototype.constructor = Mycsense.DateTimeColumn;
  */
 Mycsense.DateTimeColumn.prototype.getCellContent = function(rawContent) {
     var dateTime = new Date(rawContent);
-    return dateTime.toLocaleString();
+    return $("<span>" + dateTime.toLocaleString() + "</span>");
 };

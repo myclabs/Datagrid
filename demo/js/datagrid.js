@@ -98,6 +98,20 @@ Mycsense.Datagrid.prototype.addRows = function(rows) {
 };
 
 /**
+ * Remove a row
+ */
+Mycsense.Datagrid.prototype.deleteRow = function(rowIndex) {
+    // Delete the row
+    this.domElement.find("tr")
+        .filter(function() {
+            return $(this).data("index") == rowIndex;
+        })
+        .remove();
+    // Call the handler
+    $(this).trigger('rowDeleted', rowIndex);
+};
+
+/**
  * Define the content of a cell
  * @param column {Mycsense.Column}
  * @param index {int}
@@ -121,12 +135,20 @@ Mycsense.Datagrid.prototype.onCellChanged = function(callback) {
 };
 
 /**
+ * Add a callback to the "rowDeleted" event
+ * @param callback {function}
+ */
+Mycsense.Datagrid.prototype.onRowDeleted = function(callback) {
+    $(this).bind('rowDeleted', callback);
+};
+
+/**
  * Render the datagrid
  */
 Mycsense.Datagrid.prototype.render = function() {
     var that = this;
     that.domElement.empty();
-    that.domElement.append("<table class='table table-bordered table-striped'><thead><tr></tr></thead><tbody></tbody></table>");
+    that.domElement.append("<table class='datagrid table table-bordered table-striped'><thead><tr></tr></thead><tbody></tbody></table>");
 
     // Column headers
     $.each(this.columns, function(index, column) {
@@ -180,12 +202,17 @@ Mycsense.Datagrid.prototype.displayRows = function() {
     $.each(this.columns, function(columnIndex, column) {
         // Cells
         tableBody.find("tr").each(function(rowIndex) {
-            var row = that.rows[rowIndex];
-            if (!(column.key in row)) {
-                console.error("No '" + column.key + "' found in row #" + rowIndex + " of the datagrid");
-                return;
+            var content = null;
+            // If that's a column with content
+            if (! (column instanceof Mycsense.DeleteColumn)) {
+                var row = that.rows[rowIndex];
+                if (!(column.key in row)) {
+                    console.error("No '" + column.key + "' found in row #" + rowIndex + " of the datagrid");
+                    return;
+                }
+                content = row[column.key];
             }
-            var domCell = column.renderCell(rowIndex, row[column.key]);
+            var domCell = column.renderCell(rowIndex, content);
             $(this).append(domCell);
         });
     });

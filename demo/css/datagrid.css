@@ -13,3 +13,7 @@
     -moz-box-shadow: 0 3px 7px rgba(0,0,0,0.3);
     box-shadow: 0 3px 7px rgba(0,0,0,0.3);
 }
+
+.datagrid .column-delete {
+    text-align: center;
+}
