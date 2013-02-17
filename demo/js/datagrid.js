@@ -57,7 +57,11 @@ Mycsense.Datagrid.prototype.addColumn = function(column) {
  */
 Mycsense.Datagrid.prototype.addColumns = function(columns) {
     var that = this;
-    $.each(columns, function(index, column) {
+    $.each(columns, function(index, columnData) {
+        var column = columnData;
+        if (! (columnData instanceof Mycsense.Column)) {
+            column = new Mycsense.Column(columnData.key, columnData.label, columnData.editable);
+        }
         that.addColumn(column);
         column.setDatagrid(that);
     });

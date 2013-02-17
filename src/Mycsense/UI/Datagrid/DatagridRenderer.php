@@ -15,13 +15,13 @@ class DatagridRenderer
     public function render(Datagrid $datagrid)
     {
         $id = $datagrid->getId();
-        $datagridHtml = json_encode($datagrid, JSON_PRETTY_PRINT);
+        $datagridJson = json_encode($datagrid, JSON_PRETTY_PRINT);
 
         return <<<HTML
             <div id="$id"></div>
             <script>
                 $(function() {
-                    var datagrid = new Mycsense.Datagrid("$id", $datagridHtml);
+                    var datagrid = new Mycsense.Datagrid("$id", $datagridJson);
                     datagrid.render();
                 });
             </script>
