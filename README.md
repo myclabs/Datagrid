@@ -10,6 +10,8 @@ Work under way
 - PHP entities/objects datagrid (e.g. Doctrine entities)
 - AJAX: async content loading
 
+![screenshot](screen.png)
+
 ## Basic example
 
 Javascript version:
