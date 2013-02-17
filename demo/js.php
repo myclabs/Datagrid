@@ -38,7 +38,7 @@ require 'template/header.php';
             }
         ]);
 
-        datagrid.onCellChanged(function(event, value) {
+        datagrid.onCellChanged(function(event, value, rowIndex, row) {
             $(".message").text("Value updated to '" + value + "'").show();
         });
 

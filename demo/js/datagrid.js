@@ -130,12 +130,12 @@ Mycsense.Datagrid.prototype.setCellContent = function(column, rowIndex, content)
     // Refresh
     this.displayRows();
     // Call the handler
-    $(this).trigger('rowDeleted', [rowIndex, row]);
+    $(this).trigger('cellChanged', [content, rowIndex, row]);
 };
 
 /**
  * Add a callback to the "cellChanged" event
- * @param callback {function}
+ * @param callback {function} Parameters: (event, value, rowIndex, row)
  */
 Mycsense.Datagrid.prototype.onCellChanged = function(callback) {
     $(this).bind('cellChanged', callback);
@@ -143,7 +143,7 @@ Mycsense.Datagrid.prototype.onCellChanged = function(callback) {
 
 /**
  * Add a callback to the "rowDeleted" event
- * @param callback {function}
+ * @param callback {function} Parameters: (event, rowIndex, row)
  */
 Mycsense.Datagrid.prototype.onRowDeleted = function(callback) {
     $(this).bind('rowDeleted', callback);
