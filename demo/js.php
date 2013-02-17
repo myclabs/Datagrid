@@ -8,6 +8,8 @@ require 'template/header.php';
 
     <div id="jsDatagridExample"></div>
 
+    <div class="alert alert-info message hide"></div>
+
 </div>
 
 <script>
@@ -34,6 +36,10 @@ require 'template/header.php';
                 "title": "A third test"
             }
         ]);
+
+        datagrid.onCellChanged(function(event, value) {
+            $(".message").text("Value updated to '" + value + "'").show();
+        });
 
         datagrid.render();
 
