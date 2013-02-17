@@ -24,7 +24,7 @@ Mycsense.Column = function(key, label, editable) {
     } else {
         this.editable = editable;
     }
-    this.editContainer = $('<div class="datagrid-edit-container"></div>');
+    this.addContainer = $('<div class="datagrid-edit-container"></div>');
 };
 
 /**
@@ -75,19 +75,17 @@ Mycsense.Column.prototype.editCell = function(cell) {
         .submit(function(e) {
             e.preventDefault();
             var value = $(this).find("input").val();
-            that.editContainer.detach();
-            that.editContainer.empty();
+            that.addContainer.detach();
+            that.addContainer.empty();
             // Change the cell content
             that.datagrid.setCellContent(that, rowIndex, value);
-            // Call the handler
-            $(that.datagrid).trigger('cellChanged', [value, that.key, rowIndex]);
         });
-    that.editContainer.empty()
+    that.addContainer.empty()
         .append(form)
         .appendTo(cell)
         .find(".cancel").click(function() {
-            that.editContainer.detach();
-            that.editContainer.empty();
+            that.addContainer.detach();
+            that.addContainer.empty();
         });
     form.find("input").focus();
 };

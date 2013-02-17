@@ -38,6 +38,8 @@ require 'template/header.php';
             }
         ]);
 
+        datagrid.enableAddRows(true);
+
         datagrid.onCellChanged(function(event, value, rowIndex, row) {
             $(".message").text("Value updated to '" + value + "'").show();
         });

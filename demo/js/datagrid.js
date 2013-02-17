@@ -28,6 +28,7 @@ Mycsense.Datagrid = function(id, configuration) {
     this.columns = [];
     this.rows = [];
     this.endpoints = [];
+    this.canAddRows = false;
     // Configuration
     if (typeof configuration !== 'undefined') {
         for (var property in configuration) {
@@ -40,11 +41,30 @@ Mycsense.Datagrid = function(id, configuration) {
             }
         }
     }
+    this.addContainer = $('<div class="datagrid-add-container modal hide fade"> \
+            <div class="modal-header"> \
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> \
+                <h3>Add a row</h3> \
+            </div> \
+            <div class="modal-body"></div> \
+            <div class="modal-footer"> \
+                <button type="button" class="btn btn-primary add-row-save">Save</button> \
+                <button type="button" class="btn" data-dismiss="modal">Cancel</button> \
+            </div> \
+        </div>');
 };
 Mycsense.Datagrid.prototype.ENDPOINT_GET = "get";
 Mycsense.Datagrid.prototype.ENDPOINT_ADD = "add";
 Mycsense.Datagrid.prototype.ENDPOINT_UPDATE = "update";
 Mycsense.Datagrid.prototype.ENDPOINT_DELETE = "delete";
+
+/**
+ * Enable to add rows to the datagrid
+ * @param canAddRows {boolean}
+ */
+Mycsense.Datagrid.prototype.enableAddRows = function(canAddRows) {
+    this.canAddRows = canAddRows;
+};
 
 /**
  * Add a column
@@ -88,11 +108,17 @@ Mycsense.Datagrid.prototype.clearRows = function() {
 };
 
 /**
- * Add a row
- * @param data {Array}
+ * Add a row and refresh the datagrid
+ * @param row {Array}
+ * @return {int} The row index
  */
-Mycsense.Datagrid.prototype.addRow = function(data) {
-    this.rows.push(data);
+Mycsense.Datagrid.prototype.addRow = function(row) {
+    var rowIndex = this.rows.push(row);
+    // Refresh
+    this.displayRows();
+    // Call the handler
+    $(this).trigger('rowAdded', [rowIndex, row]);
+    return rowIndex;
 };
 
 /**
@@ -102,12 +128,12 @@ Mycsense.Datagrid.prototype.addRow = function(data) {
 Mycsense.Datagrid.prototype.addRows = function(rows) {
     var that = this;
     $.each(rows, function(index, row) {
-        that.addRow(row);
+        that.rows.push(row)
     });
 };
 
 /**
- * Remove a row
+ * Remove a row and refresh the datagrid
  */
 Mycsense.Datagrid.prototype.deleteRow = function(rowIndex) {
     var row = this.rows[rowIndex];
@@ -154,8 +180,17 @@ Mycsense.Datagrid.prototype.onRowDeleted = function(callback) {
  */
 Mycsense.Datagrid.prototype.render = function() {
     var that = this;
-    that.domElement.empty();
-    that.domElement.append("<table class='datagrid table table-bordered table-striped'><thead><tr></tr></thead><tbody></tbody></table>");
+    this.domElement.empty();
+    this.domElement.append('<table class="datagrid table table-bordered table-striped"><thead><tr></tr></thead><tbody></tbody></table>');
+
+    // Row creation
+    if (this.canAddRows) {
+        var addButton = $('<button type="button" class="btn add-row">Add a row</button>')
+            .click(function() {
+                that.displayEditForm();
+            });
+        this.domElement.append(addButton);
+    }
 
     // Column headers
     $.each(this.columns, function(index, column) {
@@ -165,15 +200,16 @@ Mycsense.Datagrid.prototype.render = function() {
     });
 
     // If async datagrid, load the cells
-    if (that.ENDPOINT_GET in that.endpoints) {
-        that.asyncRefreshRows();
+    if (this.ENDPOINT_GET in this.endpoints) {
+        this.asyncRefreshRows();
     } else {
-        that.displayRows();
+        this.displayRows();
     }
 };
 
 /**
  * Refresh the rows
+ * @private
  */
 Mycsense.Datagrid.prototype.asyncRefreshRows = function() {
     var that = this;
@@ -215,12 +251,41 @@ Mycsense.Datagrid.prototype.displayRows = function() {
                 var row = that.rows[rowIndex];
                 if (!(column.key in row)) {
                     console.error("No '" + column.key + "' found in row #" + rowIndex + " of the datagrid");
-                    return;
+                    content = null;
+                } else {
+                    content = row[column.key];
                 }
-                content = row[column.key];
             }
             var domCell = column.renderCell(rowIndex, content);
             $(this).append(domCell);
         });
     });
 };
+
+/**
+ * Display the form for editing a row
+ */
+Mycsense.Datagrid.prototype.displayEditForm = function() {
+    var that = this;
+    var form = $('<form class="form-inline"> \
+                Test \
+            </form>')
+        .submit(function(e) {
+            e.preventDefault();
+            that.addContainer.modal('hide');
+            // Add the row
+            var row = {};
+            var rowIndex = that.addRow(row);
+        });
+    that.addContainer.find(".modal-body")
+        .empty()
+        .append(form);
+    that.addContainer.find(".add-row-save")
+        .click(function() {
+            form.submit();
+        });
+    that.addContainer.appendTo(this.domElement);
+    that.addContainer.modal();
+    form.focus();
+};
+
