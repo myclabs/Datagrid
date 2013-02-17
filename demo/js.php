@@ -25,16 +25,16 @@ require 'template/header.php';
 
         datagrid.addRows([
             {
-                "title": "Test",
-                "description": "This is a long description."
+                title: "Test",
+                description: "This is a long description."
             },
             {
-                "title": "Another test",
-                "description": "This is another long description."
+                title: "Another test",
+                description: "This is another long description."
             },
             {
-                "description": "The description is defined before the title.",
-                "title": "A third test"
+                description: "The description is defined before the title.",
+                title: "A third test"
             }
         ]);
 
@@ -42,8 +42,8 @@ require 'template/header.php';
             $(".message").text("Value updated to '" + value + "'").show();
         });
 
-        datagrid.onRowDeleted(function(event, rowIndex) {
-            $(".message").text("Row " + rowIndex + " deleted").show();
+        datagrid.onRowDeleted(function(event, rowIndex, row) {
+            $(".message").text("Row '" + row.title + "' deleted").show();
         });
 
         datagrid.render();

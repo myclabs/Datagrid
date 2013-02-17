@@ -7,6 +7,15 @@ if (Mycsense == null || typeof(Mycsense) != "object") {
     var Mycsense = {};
 }
 
+
+// Array Remove - By John Resig (MIT Licensed)
+Array.prototype.remove = function(from, to) {
+    var rest = this.slice((to || from) + 1 || this.length);
+    this.length = from < 0 ? this.length + from : from;
+    return this.push.apply(this, rest);
+} ;
+
+
 /**
  * Datagrid
  * @param id {string} Identifier of the HTML block
@@ -101,29 +110,27 @@ Mycsense.Datagrid.prototype.addRows = function(rows) {
  * Remove a row
  */
 Mycsense.Datagrid.prototype.deleteRow = function(rowIndex) {
-    // Delete the row
-    this.domElement.find("tr")
-        .filter(function() {
-            return $(this).data("index") == rowIndex;
-        })
-        .remove();
+    var row = this.rows[rowIndex];
+    // Delete the row and refresh
+    this.rows.remove(rowIndex);
+    this.displayRows();
     // Call the handler
-    $(this).trigger('rowDeleted', rowIndex);
+    $(this).trigger('rowDeleted', [rowIndex, row]);
 };
 
 /**
  * Define the content of a cell
  * @param column {Mycsense.Column}
- * @param index {int}
- * @param rawContent
+ * @param rowIndex {int}
+ * @param content
  */
-Mycsense.Datagrid.prototype.setCellContent = function(column, index, rawContent) {
-    this.domElement.find("tbody tr").eq(index).find("td")
-        .filter(function() {
-            return $(this).data("column-key") && $(this).data("column-key") == column.key;
-        })
-        .find(".content")
-        .text(column.getCellContent(rawContent))
+Mycsense.Datagrid.prototype.setCellContent = function(column, rowIndex, content) {
+    var row = this.rows[rowIndex];
+    row[column.key] = content;
+    // Refresh
+    this.displayRows();
+    // Call the handler
+    $(this).trigger('rowDeleted', [rowIndex, row]);
 };
 
 /**

@@ -66,7 +66,7 @@ Mycsense.Column.prototype.renderCell = function(index, content) {
  */
 Mycsense.Column.prototype.editCell = function(cell) {
     var that = this;
-    var cellIndex = cell.parent().index();
+    var rowIndex = cell.parent().index();
     var form = $('<form class="form-inline"> \
                 <input type="text" value="' + cell.text() + '"> \
                 <button type="submit" class="btn btn-primary">Save</button> \
@@ -78,9 +78,9 @@ Mycsense.Column.prototype.editCell = function(cell) {
             that.editContainer.detach();
             that.editContainer.empty();
             // Change the cell content
-            that.datagrid.setCellContent(that, cellIndex, value);
+            that.datagrid.setCellContent(that, rowIndex, value);
             // Call the handler
-            $(that.datagrid).trigger('cellChanged', value, that.key, cellIndex);
+            $(that.datagrid).trigger('cellChanged', [value, that.key, rowIndex]);
         });
     that.editContainer.empty()
         .append(form)
@@ -120,7 +120,7 @@ Mycsense.DeleteColumn.prototype.constructor = Mycsense.DeleteColumn;
  */
 Mycsense.DeleteColumn.prototype.getCellContent = function(rawContent) {
     var that = this;
-    var content = $("<button type='button' class='btn btn-mini'><i class='icon-remove'></i></button>");
+    var content = $("<button type='button' class='btn btn-mini'><i class='icon-trash'></i></button>");
     content.click(function() {
         var rowIndex = $(this).parents("tr").data('index');
         that.datagrid.deleteRow(rowIndex);
