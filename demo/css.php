@@ -11,12 +11,12 @@ require 'template/header.php';
 </div>
 
 <style type="text/css">
-    .datagrid table th {
+    .datagrid th {
         text-align: center;
         font-size: 1.2em;
-        background-color: #897;
+        background: #897;
     }
-    .datagrid table td {
+    .datagrid td {
         padding: 12px;
     }
 </style>
