@@ -23,6 +23,7 @@ Array.prototype.remove = function(from, to) {
  * @constructor
  */
 Mycsense.Datagrid = function(id, configuration) {
+    var that = this;
     this.id = id;
     this.domElement = $("#" + id);
     this.columns = [];
@@ -52,6 +53,7 @@ Mycsense.Datagrid = function(id, configuration) {
                 <button type="button" class="btn" data-dismiss="modal">Cancel</button> \
             </div> \
         </div>');
+    this.addContainer.appendTo(this.domElement);
 };
 Mycsense.Datagrid.prototype.ENDPOINT_GET = "get";
 Mycsense.Datagrid.prototype.ENDPOINT_ADD = "add";
@@ -82,6 +84,7 @@ Mycsense.Datagrid.prototype.addColumn = function(column) {
         }
     }
     this.columns.push(column);
+    column.setDatagrid(this);
 };
 
 /**
@@ -93,10 +96,9 @@ Mycsense.Datagrid.prototype.addColumns = function(columns) {
     $.each(columns, function(index, columnData) {
         var column = columnData;
         if (! (columnData instanceof Mycsense.Column)) {
-            column = new Mycsense.Column(columnData.key, columnData.label, columnData.editable);
+            column = new Mycsense.Column(columnData.key, columnData.label, columnData.editable, columnData.addable);
         }
         that.addColumn(column);
-        column.setDatagrid(that);
     });
 };
 
@@ -145,6 +147,15 @@ Mycsense.Datagrid.prototype.deleteRow = function(rowIndex) {
 };
 
 /**
+ * Returns the content of a cell
+ * @param column {Mycsense.Column}
+ * @param rowIndex {int}
+ */
+Mycsense.Datagrid.prototype.getCellContent = function(column, rowIndex) {
+    return this.rows[rowIndex][column.key];
+};
+
+/**
  * Define the content of a cell
  * @param column {Mycsense.Column}
  * @param rowIndex {int}
@@ -155,7 +166,7 @@ Mycsense.Datagrid.prototype.setCellContent = function(column, rowIndex, content)
     row[column.key] = content;
     // Refresh
     this.displayRows();
-    // Call the handler
+    // Trigger the event
     $(this).trigger('cellChanged', [content, rowIndex, row]);
 };
 
@@ -176,6 +187,14 @@ Mycsense.Datagrid.prototype.onRowDeleted = function(callback) {
 };
 
 /**
+ * Add a callback to the "rowAdded" event
+ * @param callback {function} Parameters: (event, rowIndex, row)
+ */
+Mycsense.Datagrid.prototype.onRowAdded = function(callback) {
+    $(this).bind('rowAdded', callback);
+};
+
+/**
  * Render the datagrid
  */
 Mycsense.Datagrid.prototype.render = function() {
@@ -187,7 +206,7 @@ Mycsense.Datagrid.prototype.render = function() {
     if (this.canAddRows) {
         var addButton = $('<button type="button" class="btn add-row">Add a row</button>')
             .click(function() {
-                that.displayEditForm();
+                that.displayAddForm();
             });
         this.domElement.append(addButton);
     }
@@ -263,29 +282,51 @@ Mycsense.Datagrid.prototype.displayRows = function() {
 };
 
 /**
- * Display the form for editing a row
+ * Display the form for adding a row
  */
-Mycsense.Datagrid.prototype.displayEditForm = function() {
+Mycsense.Datagrid.prototype.displayAddForm = function() {
     var that = this;
-    var form = $('<form class="form-inline"> \
-                Test \
-            </form>')
-        .submit(function(e) {
-            e.preventDefault();
-            that.addContainer.modal('hide');
-            // Add the row
-            var row = {};
-            var rowIndex = that.addRow(row);
+    var form = $('<form class="form-horizontal"></form>');
+
+    // Add fields
+    $.each(this.columns, function(columnIndex, column) {
+        if (column.addable) {
+            var element = $('<div class="control-group"> \
+                <label class="control-label">' + column.label + '</label> \
+                <div class="controls"></div> \
+            </div>');
+            element.find('.controls')
+                .data('column', column)
+                .append(column.getFormElement(''));
+            form.append(element);
+        }
+    });
+
+    // Submit
+    form.submit(function(e) {
+        e.preventDefault();
+        that.addContainer.modal('hide');
+
+        // Create the row
+        var row = {};
+        $(this).find('.controls').each(function(index, input) {
+            var column = $(this).data('column');
+            row[column.key] = column.getValueFromFormElement($(this));
         });
-    that.addContainer.find(".modal-body")
+
+        // Add the row
+        var rowIndex = that.addRow(row);
+    });
+
+    this.addContainer.find(".add-row-save")
+        .unbind()
+        .click(function() {
+            that.addContainer.find("form").submit();
+        });
+    this.addContainer.find(".modal-body")
         .empty()
         .append(form);
-    that.addContainer.find(".add-row-save")
-        .click(function() {
-            form.submit();
-        });
-    that.addContainer.appendTo(this.domElement);
-    that.addContainer.modal();
+    this.addContainer.modal();
     form.focus();
 };
 

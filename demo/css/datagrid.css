@@ -16,6 +16,9 @@
 .datagrid .column-delete {
     text-align: center;
 }
+.datagrid .column-number {
+    text-align: right;
+}
 
 /* Cell edition */
 .datagrid-edit-container {

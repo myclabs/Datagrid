@@ -18,23 +18,27 @@ require 'template/header.php';
         var datagrid = new Mycsense.Datagrid("jsDatagridExample");
 
         datagrid.addColumns([
-            new Mycsense.Column("title", "Article title"),
-            new Mycsense.Column("description", "Description", true),
+            new Mycsense.Column("title", "Article title", false, true),
+            new Mycsense.Column("description", "Description", true, true),
+            new Mycsense.NumberColumn("counter", "Number", false, true),
             new Mycsense.DeleteColumn()
         ]);
 
         datagrid.addRows([
             {
                 title: "Test",
-                description: "This is a long description."
+                description: "This is a long description.",
+                counter: 7
             },
             {
                 title: "Another test",
-                description: "This is another long description."
+                description: "This is another long description.",
+                counter: 2
             },
             {
                 description: "The description is defined before the title.",
-                title: "A third test"
+                title: "A third test",
+                counter: 12
             }
         ]);
 
@@ -46,6 +50,10 @@ require 'template/header.php';
 
         datagrid.onRowDeleted(function(event, rowIndex, row) {
             $(".message").text("Row '" + row.title + "' deleted").show();
+        });
+
+        datagrid.onRowAdded(function(event, rowIndex, row) {
+            $(".message").text("Row '" + row.title + "' added").show();
         });
 
         datagrid.render();

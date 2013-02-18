@@ -12,9 +12,10 @@ if (Mycsense == null || typeof(Mycsense) != "object") {
  * @param key {int} Column's id
  * @param label {string} Column's label
  * @param editable {boolean} Set if the column's cells are editable
+ * @param addable {boolean} Set if the column's cells are addable
  * @constructor
  */
-Mycsense.Column = function(key, label, editable) {
+Mycsense.Column = function(key, label, editable, addable) {
     this.datagrid = undefined;
     this.key = key;
     this.label = label;
@@ -23,6 +24,11 @@ Mycsense.Column = function(key, label, editable) {
         this.editable = false;
     } else {
         this.editable = editable;
+    }
+    if (typeof addable == 'undefined') {
+        this.addable = true;
+    } else {
+        this.addable = addable;
     }
     this.addContainer = $('<div class="datagrid-edit-container"></div>');
 };
@@ -67,11 +73,12 @@ Mycsense.Column.prototype.renderCell = function(index, content) {
 Mycsense.Column.prototype.editCell = function(cell) {
     var that = this;
     var rowIndex = cell.parent().index();
+    var formElement = this.getFormElement(this.datagrid.getCellContent(this, rowIndex));
     var form = $('<form class="form-inline"> \
-                <input type="text" value="' + cell.text() + '"> \
                 <button type="submit" class="btn btn-primary">Save</button> \
                 <button type="button" class="btn cancel">Cancel</button> \
             </form>')
+        .prepend(formElement)
         .submit(function(e) {
             e.preventDefault();
             var value = $(this).find("input").val();
@@ -91,6 +98,22 @@ Mycsense.Column.prototype.editCell = function(cell) {
 };
 
 /**
+ * Returns a form element to edit a cell
+ * @param value
+ */
+Mycsense.Column.prototype.getFormElement = function(value) {
+    return $('<input type="text" name="' + this.key + '" value="' + value + '">');
+};
+
+/**
+ * Returns the value of the form element
+ * @param formElement
+ */
+Mycsense.Column.prototype.getValueFromFormElement = function(formElement) {
+    return formElement.find("input[name='" + this.key + "']").val();
+};
+
+/**
  * Returns the content of a cell
  * @private
  */
@@ -99,13 +122,16 @@ Mycsense.Column.prototype.getCellContent = function(rawContent) {
 };
 
 
+///////////////////////////////////////////
+// ----------- Delete column
+
 /**
  * Delete column
  * @param label {string} Column's label
  * @constructor
  */
 Mycsense.DeleteColumn = function(label) {
-    Mycsense.Column.call(this, "delete", label, false);
+    Mycsense.Column.call(this, "delete", label, false, false);
     this.cssClass = 'column-delete';
 };
 // Inheritance
@@ -127,15 +153,47 @@ Mycsense.DeleteColumn.prototype.getCellContent = function(rawContent) {
 };
 
 
+///////////////////////////////////////////
+// ----------- Number column
+
+/**
+ * Number column
+ * @param key {int} Column's id
+ * @param label {string} Column's label
+ * @param editable {boolean} Set if the column's cells are editable
+ * @param addable {boolean} Set if the column's cells are addable
+ * @constructor
+ */
+Mycsense.NumberColumn = function(key, label, editable, addable) {
+    Mycsense.Column.call(this, key, label, editable, addable);
+    this.cssClass = 'column-number';
+};
+// Inheritance
+Mycsense.NumberColumn.prototype = Object.create(Mycsense.Column.prototype);
+Mycsense.NumberColumn.prototype.constructor = Mycsense.NumberColumn;
+
+/**
+ * Returns a form element to edit a cell
+ * @param value
+ */
+Mycsense.NumberColumn.prototype.getFormElement = function(value) {
+    return $('<input type="number" name="' + this.key + '" value="' + value + '">');
+};
+
+
+///////////////////////////////////////////
+// ----------- DateTime column
+
 /**
  * DateTime column
  * @param key {int} Column's id
  * @param label {string} Column's label
  * @param editable {boolean} Set if the column's cells are editable
+ * @param addable {boolean} Set if the column's cells are addable
  * @constructor
  */
-Mycsense.DateTimeColumn = function(key, label, editable) {
-    Mycsense.Column.call(this, key, label, editable);
+Mycsense.DateTimeColumn = function(key, label, editable, addable) {
+    Mycsense.Column.call(this, key, label, editable, addable);
     this.cssClass = 'column-datetime';
 };
 // Inheritance
